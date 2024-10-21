@@ -94,7 +94,6 @@ function createBouncingImages() {
             requestAnimationFrame(updatePosition);
         }
 
-        // Apply platform speed factor to bouncing images
         let platformSpeedFactor = getPlatformSpeedFactor();
         velocityX *= platformSpeedFactor;
         velocityY *= platformSpeedFactor;
@@ -112,21 +111,25 @@ function createBouncingImages() {
 }
 
 function getPlatformSpeedFactor() {
-    if (navigator.platform.includes('Mac') || /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        return 6.5; // Higher factor for Mac/iOS
+    if (navigator.platform.includes('iPad') || /iPad/i.test(navigator.userAgent)) {
+        return 3; // ipad
+    } else if (navigator.platform.includes('Mac')) {
+        return 6; // mac
+    } else if (/iPhone|iPod/i.test(navigator.userAgent)) {
+        return 1; // iphone
     } else {
-        return 1; // Default speed for other platforms
-    }
+        return 1; // default
+}
 }
 
-// Main image
+// main
 const img = document.getElementById('bouncingImage');
 
 let initialPosX = Math.random() * (window.innerWidth - 150);
 let initialPosY = Math.random() * (window.innerHeight - 97);
-let platformSpeedFactor = getPlatformSpeedFactor(); // Get speed factor once
-let initialVelocityX = 4 * platformSpeedFactor; // Apply factor here
-let initialVelocityY = 4 * platformSpeedFactor; // Apply factor here
+let platformSpeedFactor = getPlatformSpeedFactor();
+let initialVelocityX = 4 * platformSpeedFactor;
+let initialVelocityY = 4 * platformSpeedFactor;
 
 function updateMainImagePosition() {
     initialPosX += initialVelocityX;
@@ -145,7 +148,7 @@ function updateMainImagePosition() {
     requestAnimationFrame(updateMainImagePosition);
 }
 
-// Start moving the main image
+// moving img
 updateMainImagePosition();
 
 img.addEventListener('mouseover', () => {
