@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>WHEREAREYOU</title>
-    <link rel="icon" type="image/png" href="images/favicon-16x16.png">
+    <link rel="icon" type="image/png" href="images/please.png">
     <link rel="stylesheet" href="styles.css">
 
     <style>
@@ -45,6 +45,17 @@
             50% { opacity: 0; }
             100% { opacity: 1; }
         }
+
+        #textBox {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 19px;
+        text-align: center;
+        color: #333;
+        z-index: 1000;
+    }
     </style>
 </head>
 
@@ -54,9 +65,11 @@
 
     <script>
 let changeImageTimer;
+let textBoxTimer1, textBoxTimer2, stopMotionTimer;
 const originalImageSrc = "images/WHEREISIT.png"; 
 const sadImageSrc = "images/please.png"; 
-let isImageChanged = false;
+let isSadFace = false;
+let audioStopped = false;
 
 function createBouncingImages() {
     const count = Math.floor(Math.random() * 5) + 1; 
@@ -91,7 +104,9 @@ function createBouncingImages() {
             newImg.style.left = posX + 'px';
             newImg.style.top = posY + 'px';
 
-            requestAnimationFrame(updatePosition);
+            if (!isSadFace) {  
+                requestAnimationFrame(updatePosition);
+            }
         }
 
         let platformSpeedFactor = getPlatformSpeedFactor();
@@ -112,17 +127,16 @@ function createBouncingImages() {
 
 function getPlatformSpeedFactor() {
     if (navigator.platform.includes('iPad') || /iPad/i.test(navigator.userAgent)) {
-        return 3; // ipad
+        return 3; 
     } else if (navigator.platform.includes('Mac')) {
-        return 6; // mac
+        return 6; 
     } else if (/iPhone|iPod/i.test(navigator.userAgent)) {
-        return 1; // iphone
+        return 1; 
     } else {
-        return 1; // default
-}
+        return 1; 
+    }
 }
 
-// main
 const img = document.getElementById('bouncingImage');
 
 let initialPosX = Math.random() * (window.innerWidth - 150);
@@ -145,10 +159,11 @@ function updateMainImagePosition() {
     img.style.left = initialPosX + 'px';
     img.style.top = initialPosY + 'px';
 
-    requestAnimationFrame(updateMainImagePosition);
+    if (!isSadFace) {  
+        requestAnimationFrame(updateMainImagePosition);
+    }
 }
 
-// moving img
 updateMainImagePosition();
 
 img.addEventListener('mouseover', () => {
@@ -164,26 +179,98 @@ setInterval(() => {
 }, 3000); 
 
 function changeImage() {
-    if (!isImageChanged) {
-        img.src = sadImageSrc; 
-        isImageChanged = true; 
+    img.src = sadImageSrc; 
+
+    textBoxTimer1 = setTimeout(() => {
+        const textBox = document.createElement('div');
+        textBox.innerHTML = "please click on me";
+        textBox.id = "textBox";
+        textBox.style.position = 'absolute';
+        textBox.style.left = '50%';
+        textBox.style.top = '50%';
+        textBox.style.transform = 'translate(-50%, -50%)';
+        document.body.appendChild(textBox);
+    }, 5000);
+
+    textBoxTimer2 = setTimeout(() => {
+        const textBox = document.getElementById('textBox');
+        if (textBox) {
+            textBox.innerHTML = "i would really APPRECIATE it if you CLICKED on me.";
+        }
+    }, 10000);
+
+    stopMotionTimer = setTimeout(() => {
+    const images = document.querySelectorAll('img');
+    images.forEach(image => {
+        image.style.animationPlayState = 'paused';
+    });
+
+    isSadFace = true;
+    audioStopped = true;
+
+    if (audio) {
+        audio.pause();
     }
+
+    img.style.width = '800px';
+    img.style.height = '800px';
+
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    const newPosX = Math.max(0, (windowWidth - 800) / 2);
+    const newPosY = Math.max(0, (windowHeight - 800) / 2);
+
+    if (newPosX + 800 > windowWidth) {
+        img.style.left = `${windowWidth - 800}px`;
+    } else {
+        img.style.left = `${newPosX}px`;
+    }
+
+    if (newPosY + 800 > windowHeight) {
+        img.style.top = `${windowHeight - 800}px`;
+    } else {
+        img.style.top = `${newPosY}px`;
+    }
+
+    const textBox = document.getElementById('textBox');
+    if (textBox) {
+        textBox.style.color = 'red';
+        textBox.style.fontWeight = 'bold';
+
+    }
+
+    img.addEventListener('click', () => {
+        window.location.href = "tapes.html";
+    });
+}, 16000);
 }
 
 img.addEventListener('click', () => {
     createBouncingImages(); 
     clearTimeout(changeImageTimer); 
+    clearTimeout(textBoxTimer1);
+    clearTimeout(textBoxTimer2);
+    clearTimeout(stopMotionTimer);
+    const textBox = document.getElementById('textBox');
+    if (textBox) {
+        document.body.removeChild(textBox);
+    }
     img.src = originalImageSrc; 
-    isImageChanged = false; 
+    isSadFace = false;  
     changeImageTimer = setTimeout(changeImage, 6000);
 });
 
-let audio; 
+let audio;
 
 window.addEventListener('click', () => {
-    if (!audio) {
+    if (!audio && !audioStopped) {
         audio = new Audio('media/wind.mp3');
         audio.loop = true;
+        audio.play().catch(error => {
+            console.error('Audio playback failed:', error);
+        });
+    } else if (audio && !audioStopped && audio.paused) {  
         audio.play().catch(error => {
             console.error('Audio playback failed:', error);
         });
