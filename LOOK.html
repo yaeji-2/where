@@ -53,111 +53,135 @@
     <audio autoplay loop src="media/wind.mp3" type="audio/mp3"></audio>
 
     <script>
-        let changeImageTimer;
-        const originalImageSrc = "images/WHEREISIT.png"; 
-        const sadImageSrc = "images/please.png"; 
-        let isImageChanged = false;
+let changeImageTimer;
+const originalImageSrc = "images/WHEREISIT.png"; 
+const sadImageSrc = "images/please.png"; 
+let isImageChanged = false;
 
-        function createBouncingImages() {
-            const count = Math.floor(Math.random() * 5) + 1; 
-            for (let i = 0; i < count; i++) {
-                const newImg = document.createElement('img');
-                newImg.src = originalImageSrc; 
-                newImg.alt = 'WHEREAREYOU';
-                newImg.width = 150;
-                newImg.height = 97;
-                newImg.style.position = 'absolute';
-                document.body.appendChild(newImg);
+function createBouncingImages() {
+    const count = Math.floor(Math.random() * 5) + 1; 
+    for (let i = 0; i < count; i++) {
+        const newImg = document.createElement('img');
+        newImg.src = originalImageSrc; 
+        newImg.alt = 'WHEREAREYOU';
+        newImg.width = 150;
+        newImg.height = 97;
+        newImg.style.position = 'absolute';
+        document.body.appendChild(newImg);
 
-                let posX = Math.random() * (window.innerWidth - 150);
-                let posY = Math.random() * (window.innerHeight - 97);
-                let velocityX = 4 * (Math.random() > 0.5 ? 1 : -1); 
-                let velocityY = 4 * (Math.random() > 0.5 ? 1 : -1); 
+        let posX = Math.random() * (window.innerWidth - 150);
+        let posY = Math.random() * (window.innerHeight - 97);
+        let velocityX = 4 * (Math.random() > 0.5 ? 1 : -1); 
+        let velocityY = 4 * (Math.random() > 0.5 ? 1 : -1); 
 
-                newImg.style.left = posX + 'px';  
-                newImg.style.top = posY + 'px';   
-
-                function updatePosition() {
-                    posX += velocityX;
-                    posY += velocityY;
-
-                    if (posX <= 0 || posX >= window.innerWidth - 150) {
-                        velocityX *= -1;
-                    }
-                    if (posY <= 0 || posY >= window.innerHeight - 97) {
-                        velocityY *= -1;
-                    }
-
-                    newImg.style.left = posX + 'px';
-                    newImg.style.top = posY + 'px';
-
-                    requestAnimationFrame(updatePosition);
-                }
-
-                updatePosition();
-
-                newImg.addEventListener('mouseover', () => {
-                    newImg.classList.add('invert');
-                });
-
-                newImg.addEventListener('mouseout', () => {
-                    newImg.classList.remove('invert');
-                });
-            }
-        }
-
-        const img = document.getElementById('bouncingImage');
-
-        let initialPosX = Math.random() * (window.innerWidth - 150);
-        let initialPosY = Math.random() * (window.innerHeight - 97);
-        let initialVelocityX = 4;
-        let initialVelocityY = 4;
+        newImg.style.left = posX + 'px';  
+        newImg.style.top = posY + 'px';   
 
         function updatePosition() {
-            initialPosX += initialVelocityX;
-            initialPosY += initialVelocityY;
+            posX += velocityX;
+            posY += velocityY;
 
-            if (initialPosX <= 0 || initialPosX >= window.innerWidth - 150) {
-                initialVelocityX *= -1;
+            if (posX <= 0 || posX >= window.innerWidth - 150) {
+                velocityX *= -1;
             }
-            if (initialPosY <= 0 || initialPosY >= window.innerHeight - 97) {
-                initialVelocityY *= -1;
+            if (posY <= 0 || posY >= window.innerHeight - 97) {
+                velocityY *= -1;
             }
 
-            img.style.left = initialPosX + 'px';
-            img.style.top = initialPosY + 'px';
+            newImg.style.left = posX + 'px';
+            newImg.style.top = posY + 'px';
 
             requestAnimationFrame(updatePosition);
         }
 
+        // Apply platform speed factor to bouncing images
+        let platformSpeedFactor = getPlatformSpeedFactor();
+        velocityX *= platformSpeedFactor;
+        velocityY *= platformSpeedFactor;
+
         updatePosition();
 
-        img.addEventListener('mouseover', () => {
-            img.classList.add('invert');
+        newImg.addEventListener('mouseover', () => {
+            newImg.classList.add('invert');
         });
 
-        img.addEventListener('mouseout', () => {
-            img.classList.remove('invert');
+        newImg.addEventListener('mouseout', () => {
+            newImg.classList.remove('invert');
         });
+    }
+}
 
-        setInterval(() => {
-            img.classList.toggle('flicker');
-        }, 3000); 
+function getPlatformSpeedFactor() {
+    if (navigator.platform.includes('Mac') || /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        return 6.5; // Higher factor for Mac/iOS
+    } else {
+        return 1; // Default speed for other platforms
+    }
+}
 
-        function changeImage() {
-            if (!isImageChanged) {
-                img.src = sadImageSrc; 
-                isImageChanged = true; 
-            }
-        }
+// Main image
+const img = document.getElementById('bouncingImage');
 
-        img.addEventListener('click', () => {
-            createBouncingImages(); 
-            clearTimeout(changeImageTimer); 
-            img.src = originalImageSrc; 
-            isImageChanged = false; 
-            changeImageTimer = setTimeout(changeImage, 6000);
-        });
+let initialPosX = Math.random() * (window.innerWidth - 150);
+let initialPosY = Math.random() * (window.innerHeight - 97);
+let platformSpeedFactor = getPlatformSpeedFactor(); // Get speed factor once
+let initialVelocityX = 4 * platformSpeedFactor; // Apply factor here
+let initialVelocityY = 4 * platformSpeedFactor; // Apply factor here
+
+function updateMainImagePosition() {
+    initialPosX += initialVelocityX;
+    initialPosY += initialVelocityY;
+
+    if (initialPosX <= 0 || initialPosX >= window.innerWidth - 150) {
+        initialVelocityX *= -1;
+    }
+    if (initialPosY <= 0 || initialPosY >= window.innerHeight - 97) {
+        initialVelocityY *= -1;
+    }
+
+    img.style.left = initialPosX + 'px';
+    img.style.top = initialPosY + 'px';
+
+    requestAnimationFrame(updateMainImagePosition);
+}
+
+// Start moving the main image
+updateMainImagePosition();
+
+img.addEventListener('mouseover', () => {
+    img.classList.add('invert');
+});
+
+img.addEventListener('mouseout', () => {
+    img.classList.remove('invert');
+});
+
+setInterval(() => {
+    img.classList.toggle('flicker');
+}, 3000); 
+
+function changeImage() {
+    if (!isImageChanged) {
+        img.src = sadImageSrc; 
+        isImageChanged = true; 
+    }
+}
+
+img.addEventListener('click', () => {
+    createBouncingImages(); 
+    clearTimeout(changeImageTimer); 
+    img.src = originalImageSrc; 
+    isImageChanged = false; 
+    changeImageTimer = setTimeout(changeImage, 6000);
+});
+
+window.addEventListener('click', () => {
+    const audio = new Audio('media/wind.mp3');
+    audio.loop = true;
+    audio.play().catch(error => {
+        console.error('Audio playback failed:', error);
+    });
+});
     </script>
 </body>
 </html>
