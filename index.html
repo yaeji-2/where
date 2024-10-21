@@ -1,162 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>WHEREAREYOU</title>
+    <title>???</title>
     <link rel="icon" type="image/png" href="images/favicon-16x16.png">
     <link rel="stylesheet" href="styles.css">
 
     <style>
-        * {
-            image-rendering: pixelated !important;
-        }
         body {
-            cursor: url("images/cursor.gif"), auto;
-            background-image: url("images/WON.png");
+            margin: 0;
+            height: 100vh;
+            background-color: black;
             overflow: hidden;
-            user-select: none;
+            position: relative;
+            cursor: url("images/cursor.gif"), auto;
+            animation: glitch 0.1s infinite; /* Fast glitch effect */
         }
 
-        a {
-            cursor: url("images/cursor2.gif"), default;
+        @keyframes glitch {
+            0% { background-color: black; }
+            10% { background-color: #ff0000; } /* Bright Red */
+            20% { background-color: #00ff00; } /* Bright Green */
+            30% { background-color: #0000ff; } /* Bright Blue */
+            40% { background-color: black; }
+            50% { background-color: #ff0000; }
+            60% { background-color: #00ff00; }
+            70% { background-color: #0000ff; }
+            80% { background-color: black; }
+            90% { background-color: #ff0000; }
+            100% { background-color: #00ff00; }
         }
 
         img {
             position: absolute;
-            width: 150px;
-            height: 97px;
-        }
-
-        iframe {
-            margin-left: -9999px;
-        }
-
-        .invert {
-            filter: brightness(0) invert(1);
-        }
-
-        .flicker {
-            animation: flicker 0.1s infinite alternate;
-        }
-
-        @keyframes flicker {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
+            width: 150px; /* Adjust size as needed */
+            height: auto; /* Keep aspect ratio */
         }
     </style>
 </head>
-
 <body>
-    <img src="images/WHEREISIT.png" alt="WHEREAREYOU" width="150" height="97" id="bouncingImage">
-    <audio autoplay loop src="media/wind.mp3" type="audio/mp3"></audio>
+
+    <audio id="backgroundAudio" preload="auto" loop src="media/wind.mp3" type="audio/mp3"></audio>
+    
+    <img src="images/WON.png" alt="Eerie Image" id="hello">
 
     <script>
-        let changeImageTimer;
-        const originalImageSrc = "images/WHEREISIT.png"; 
-        const sadImageSrc = "images/please.png"; 
-        let isImageChanged = false;
+        const eerieImage = document.getElementById('hello');
+        eerieImage.style.left = Math.random() * (window.innerWidth - 150) + 'px';
+        eerieImage.style.top = Math.random() * (window.innerHeight - 97) + 'px';
 
-        function createBouncingImages() {
-            const count = Math.floor(Math.random() * 5) + 1; 
-            for (let i = 0; i < count; i++) {
-                const newImg = document.createElement('img');
-                newImg.src = originalImageSrc; 
-                newImg.alt = 'WHEREAREYOU';
-                newImg.width = 150;
-                newImg.height = 97;
-                newImg.style.position = 'absolute';
-                document.body.appendChild(newImg);
-
-                let posX = Math.random() * (window.innerWidth - 150);
-                let posY = Math.random() * (window.innerHeight - 97);
-                let velocityX = 4 * (Math.random() > 0.5 ? 1 : -1); 
-                let velocityY = 4 * (Math.random() > 0.5 ? 1 : -1); 
-
-                newImg.style.left = posX + 'px';  
-                newImg.style.top = posY + 'px';   
-
-                function updatePosition() {
-                    posX += velocityX;
-                    posY += velocityY;
-
-                    if (posX <= 0 || posX >= window.innerWidth - 150) {
-                        velocityX *= -1;
-                    }
-                    if (posY <= 0 || posY >= window.innerHeight - 97) {
-                        velocityY *= -1;
-                    }
-
-                    newImg.style.left = posX + 'px';
-                    newImg.style.top = posY + 'px';
-
-                    requestAnimationFrame(updatePosition);
-                }
-
-                updatePosition();
-
-                newImg.addEventListener('mouseover', () => {
-                    newImg.classList.add('invert');
-                });
-
-                newImg.addEventListener('mouseout', () => {
-                    newImg.classList.remove('invert');
-                });
-            }
-        }
-
-        const img = document.getElementById('bouncingImage');
-
-        let initialPosX = Math.random() * (window.innerWidth - 150);
-        let initialPosY = Math.random() * (window.innerHeight - 97);
-        let initialVelocityX = 4;
-        let initialVelocityY = 4;
-
-        function updatePosition() {
-            initialPosX += initialVelocityX;
-            initialPosY += initialVelocityY;
-
-            if (initialPosX <= 0 || initialPosX >= window.innerWidth - 150) {
-                initialVelocityX *= -1;
-            }
-            if (initialPosY <= 0 || initialPosY >= window.innerHeight - 97) {
-                initialVelocityY *= -1;
-            }
-
-            img.style.left = initialPosX + 'px';
-            img.style.top = initialPosY + 'px';
-
-            requestAnimationFrame(updatePosition);
-        }
-
-        updatePosition();
-
-        img.addEventListener('mouseover', () => {
-            img.classList.add('invert');
-        });
-
-        img.addEventListener('mouseout', () => {
-            img.classList.remove('invert');
-        });
-
-        setInterval(() => {
-            img.classList.toggle('flicker');
-        }, 3000); 
-
-        function changeImage() {
-            if (!isImageChanged) {
-                img.src = sadImageSrc; 
-                isImageChanged = true; 
-            }
-        }
-
-        img.addEventListener('click', () => {
-            createBouncingImages(); 
-            clearTimeout(changeImageTimer); 
-            img.src = originalImageSrc; 
-            isImageChanged = false; 
-            changeImageTimer = setTimeout(changeImage, 6000);
+        eerieImage.addEventListener('click', () => {
+            const audio = document.getElementById('backgroundAudio');
+            audio.play();
+            window.location.href = "LOOK.html";
         });
     </script>
 </body>
