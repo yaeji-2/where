@@ -175,12 +175,16 @@ img.addEventListener('click', () => {
     changeImageTimer = setTimeout(changeImage, 6000);
 });
 
+let audio; 
+
 window.addEventListener('click', () => {
-    const audio = new Audio('media/wind.mp3');
-    audio.loop = true;
-    audio.play().catch(error => {
-        console.error('Audio playback failed:', error);
-    });
+    if (!audio) {
+        audio = new Audio('media/wind.mp3');
+        audio.loop = true;
+        audio.play().catch(error => {
+            console.error('Audio playback failed:', error);
+        });
+    }
 });
     </script>
 </body>
