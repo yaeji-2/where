@@ -15,14 +15,14 @@
             overflow: hidden;
             position: relative;
             cursor: url("images/cursor.gif"), auto;
-            animation: glitch 0.1s infinite; /* Fast glitch effect */
+            animation: glitch 0.1s infinite;
         }
 
         @keyframes glitch {
             0% { background-color: black; }
-            10% { background-color: #ff0000; } /* Bright Red */
-            20% { background-color: #00ff00; } /* Bright Green */
-            30% { background-color: #0000ff; } /* Bright Blue */
+            10% { background-color: #ff0000; }
+            20% { background-color: #00ff00; }
+            30% { background-color: #0000ff; }
             40% { background-color: black; }
             50% { background-color: #ff0000; }
             60% { background-color: #00ff00; }
@@ -34,12 +34,31 @@
 
         img {
             position: absolute;
-            width: 150px; /* Adjust size as needed */
-            height: auto; /* Keep aspect ratio */
+            width: 150px;
+            height: auto;
+        }
+
+        .beg {
+            position: absolute;
+            font-size: 35pt;
+            margin-left: 25%;
+            padding-top: 11%;
         }
     </style>
 </head>
 <body>
+
+    <p class="beg">PLEASECLICKME</p>
+
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                let begElement = document.querySelector('.beg');
+                begElement.style.color = 'red';
+                begElement.style.fontSize = '100pt';
+            }, 4500);
+        };
+    </script>
 
     <audio id="backgroundAudio" preload="auto" loop src="media/wind.mp3" type="audio/mp3"></audio>
     
