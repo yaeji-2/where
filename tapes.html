@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-        <title>tapes</title>
-        <link rel="icon" type="image/png" href="images/favicon-16x16.png">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>tapes</title>
+    <link rel="icon" type="image/png" href="images/vhs-tape.png">
 
-        <style>
+    <style>
         body {
             cursor: url("images/cursor.gif"), auto;
             background-image: url("images/nowyourelooking.png");
@@ -26,7 +26,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000; /* Ensure it's above other content */
+            z-index: 1000;
         }
 
         .loading-screen h1 {
@@ -41,72 +41,80 @@
             background-color: gray;
         }
 
-        .volume-controls {
-    text-align: center;
-    padding: 10px;
-    position: absolute; /* Change from relative to absolute */
-    bottom: 10px; /* Position it 20px from the bottom */
-    left: 50%; /* Center it horizontally */
-    transform: translateX(-50%); /* Adjust position to truly center */
-}
-
-        .volume-label {
-            font-size: 18px;
-            margin-bottom: 5px;
-            color: red;
-            font-weight: bold;
-        }
-
-        .volume-bar {
+        .tape-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 110px;
+            margin-top: 420px;
         }
 
-        .volume-square {
-            width: 30px;
-            height: 30px;
-            background-color: gray;
-            margin: 0 2px;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .control-button {
-            font-size: 20px;
+        .tape-container img {
+            width: 150px;
+            height: 80px;
             cursor: pointer;
-            background-color: black;
+        }
+
+        .video-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+        }
+
+        .video-container .close-button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: red;
             color: white;
             border: none;
-            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
         }
-        </style>
-    </head>
 
-    <body>
-        <div class="loading-screen" id="loadingScreen">
-            <h1>THANK YOU FOR CLICKING ON ME</h1>
-            <button id="welcomeButton">YOU'RE WELCOME</button>
-        </div>
+        @media only screen and (max-width: 768px) {
+            .tape-container {
+                flex-direction: column;
+                align-items: center;
+                margin-top: 180px;
+                gap: 100px;
+            }
+        }
+    </style>
+</head>
 
-        <audio loop id="backgroundAudio" src="media/LISTEN.mp3" type="audio/mp3"></audio>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <h1>THANK YOU FOR CLICKING ON ME</h1>
+        <button id="welcomeButton">YOU'RE WELCOME</button>
+    </div>
 
-        <div class="volume-controls">
-            <div class="volume-label">TURN THAT SHIT DOWN</div>
-            <div class="volume-bar" id="volumeBar"></div>
-            <div class="controls">
-                <button class="control-button" id="decreaseVolume">-</button>
-                <button class="control-button" id="increaseVolume">+</button>
-            </div>
-        </div>
-        
-        <script>
-        document.getElementById('welcomeButton').addEventListener('click', function() {
+    <audio loop id="backgroundAudio" src="media/LISTEN.mp3" type="audio/mp3"></audio>
+
+    <div class="tape-container">
+        <img src="images/vhs-tape.png" data-video="media/WANGAN.mp4" alt="Tape 1">
+        <img src="images/vhs-tape.png" data-video="media/YOURESOLOUD.mp4" alt="Tape 2">
+        <img src="images/vhs-tape.png" data-video="media/video3.mp4" alt="Tape 3">
+        <img src="images/vhs-tape.png" data-video="media/video4.mp4" alt="Tape 4">
+    </div>
+
+    <div class="video-container" id="videoContainer">
+        <video id="videoPlayer" controls></video>
+        <button class="close-button" id="closeVideo">X</button>
+    </div>
+
+    <script>
+        document.getElementById('welcomeButton').addEventListener('click', function () {
             document.getElementById('loadingScreen').style.display = 'none';
             const audio = document.querySelector('audio');
             if (audio) {
@@ -115,48 +123,35 @@
                 });
             }
         });
-        </script>
 
-<script>
-    const audio = document.getElementById('backgroundAudio');
-    const volumeBar = document.getElementById('volumeBar');
-    const increaseVolume = document.getElementById('increaseVolume');
-    const decreaseVolume = document.getElementById('decreaseVolume');
-    let currentVolume = 1;
+        const tapes = document.querySelectorAll('.tape-container img');
+        const videoContainer = document.getElementById('videoContainer');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const closeVideo = document.getElementById('closeVideo');
+        const backgroundAudio = document.getElementById('backgroundAudio');
 
-    function updateVolumeBar() {
-        volumeBar.innerHTML = '';
-        for (let i = 0; i < 10; i++) {
-            const square = document.createElement('div');
-            square.className = 'volume-square';
-            square.style.backgroundColor = (i < Math.round(currentVolume * 10)) ? 'green' : (currentVolume === 0 && i === 0 ? 'gray' : 'gray');
-            volumeBar.appendChild(square);
-        }
-        audio.volume = currentVolume;
-    }
-
-    increaseVolume.addEventListener('click', () => {
-        if (currentVolume < 1) {
-            currentVolume += 0.1;
-            updateVolumeBar();
-        }
-    });
-
-    decreaseVolume.addEventListener('click', () => {
-        if (currentVolume > 0) {
-            currentVolume -= 0.1;
-            updateVolumeBar();
-        }
-    });
-
-    document.getElementById('welcomeButton').addEventListener('click', function() {
-        document.getElementById('loadingScreen').style.display = 'none';
-        audio.play().catch(error => {
-            console.error('Audio playback failed:', error);
+        tapes.forEach(tape => {
+            tape.addEventListener('click', function () {
+                const videoSrc = this.getAttribute('data-video');
+                videoPlayer.src = videoSrc;
+                videoContainer.style.display = 'block';
+                videoPlayer.play();
+                if (backgroundAudio) {
+                    backgroundAudio.pause();
+                }
+            });
         });
-    });
 
-    updateVolumeBar();
-</script>
-    </body>
+        closeVideo.addEventListener('click', function () {
+            videoContainer.style.display = 'none';
+            videoPlayer.pause();
+
+            if (backgroundAudio) {
+                backgroundAudio.play().catch(error => {
+                    console.error('Audio playback failed:', error);
+                });
+            }
+        });
+    </script>
+</body>
 </html>
