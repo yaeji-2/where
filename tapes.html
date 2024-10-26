@@ -10,8 +10,11 @@
         body {
             cursor: url("images/cursor.gif"), auto;
             background-image: url("images/nowyourelooking.png");
-            overflow: hidden;
-            user-select: none;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .loading-screen {
@@ -46,7 +49,8 @@
             justify-content: center;
             flex-wrap: wrap;
             gap: 110px;
-            margin-top: 420px;
+            margin: auto;
+            position: absolute;
         }
 
         .tape-container img {
@@ -86,7 +90,8 @@
             .tape-container {
                 flex-direction: column;
                 align-items: center;
-                margin-top: 180px;
+                margin: auto;
+                position: absolute;
                 gap: 100px;
             }
         }
@@ -104,8 +109,8 @@
     <div class="tape-container">
         <img src="images/vhs-tape.png" data-video="media/WANGAN.mp4" alt="Tape 1">
         <img src="images/vhs-tape.png" data-video="media/YOURESOLOUD.mp4" alt="Tape 2">
-        <img src="images/vhs-tape.png" data-video="media/video3.mp4" alt="Tape 3">
-        <img src="images/vhs-tape.png" data-video="media/video4.mp4" alt="Tape 4">
+        <img src="images/vhs-tape.png" data-video="media/THREE.mp4" alt="Tape 3">
+        <img src="images/vhs-tape.png" data-video="media/coping.mp4" alt="Tape 4">
     </div>
 
     <div class="video-container" id="videoContainer">
@@ -123,14 +128,21 @@
                 });
             }
         });
-
+    
         const tapes = document.querySelectorAll('.tape-container img');
         const videoContainer = document.getElementById('videoContainer');
         const videoPlayer = document.getElementById('videoPlayer');
         const closeVideo = document.getElementById('closeVideo');
         const backgroundAudio = document.getElementById('backgroundAudio');
-
-        tapes.forEach(tape => {
+    
+        const tapeViews = {
+            'Tape 1': false,
+            'Tape 2': false,
+            'Tape 3': false,
+            'Tape 4': false
+        };
+    
+        tapes.forEach((tape, index) => {
             tape.addEventListener('click', function () {
                 const videoSrc = this.getAttribute('data-video');
                 videoPlayer.src = videoSrc;
@@ -139,19 +151,96 @@
                 if (backgroundAudio) {
                     backgroundAudio.pause();
                 }
+    
+                tapeViews[`Tape ${index + 1}`] = true;
             });
         });
-
+    
         closeVideo.addEventListener('click', function () {
             videoContainer.style.display = 'none';
             videoPlayer.pause();
-
+    
             if (backgroundAudio) {
                 backgroundAudio.play().catch(error => {
                     console.error('Audio playback failed:', error);
                 });
             }
+    
+            if (Object.values(tapeViews).every(viewed => viewed === true)) {
+                showFinalDialog();
+            }
         });
-    </script>
+    
+        function showFinalDialog() {
+            document.querySelector('.tape-container').style.display = 'none';
+    
+            const dialog = document.createElement('div');
+            dialog.style.backgroundColor = 'black';
+            dialog.style.color = 'red';
+            dialog.style.position = 'fixed';
+            dialog.style.top = '50%';
+            dialog.style.left = '50%';
+            dialog.style.transform = 'translate(-50%, -50%)';
+            dialog.style.padding = '20px';
+            dialog.style.zIndex = '3000';
+            dialog.innerHTML = `
+                <p>What's your name?</p>
+                <input type="text" id="userName" />
+                <button onclick="saveName()">Submit</button>
+            `;
+            document.body.appendChild(dialog);
+        }
+    
+        function saveName() {
+    const userName = document.getElementById('userName').value.trim();
+    
+    if (!userName) {
+        alert("Please enter your name.");
+        return;
+    }
+
+    fetch('https://script.google.com/macros/s/AKfycbzk8z_Lq0P5o-2y-_i4p_NMAMKNmRPSLPjKzVM16A3ZkcONKiq7PIXqc3S3uI1Gaa8b/exec', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: userName })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+        showFriendQuestion();
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert("There was an error saving your name.");
+    });
+}
+
+        function showFriendQuestion() {
+            document.body.innerHTML = '';
+    
+            const friendDialog = document.createElement('div');
+            friendDialog.style.backgroundColor = 'black';
+            friendDialog.style.color = 'red';
+            friendDialog.style.position = 'fixed';
+            friendDialog.style.top = '50%';
+            friendDialog.style.left = '50%';
+            friendDialog.style.transform = 'translate(-50%, -50%)';
+            friendDialog.style.padding = '20px';
+            friendDialog.style.zIndex = '3000';
+            friendDialog.innerHTML = `
+                <p>DON'T YOU LOVE BEING MY FRIEND?</p>
+                <button onclick="window.location.href='yes.html'">Yes</button>
+                <button onclick="window.location.href='no.html'">No</button>
+            `;
+            document.body.appendChild(friendDialog);
+        }
+    </script>    
 </body>
 </html>
