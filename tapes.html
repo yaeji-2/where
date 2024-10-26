@@ -200,12 +200,14 @@
     }
 
     fetch('https://script.google.com/macros/s/AKfycbzk8z_Lq0P5o-2y-_i4p_NMAMKNmRPSLPjKzVM16A3ZkcONKiq7PIXqc3S3uI1Gaa8b/exec', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: userName })
-    })
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name: userName })
+})
+
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
