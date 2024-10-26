@@ -167,63 +167,10 @@
             }
     
             if (Object.values(tapeViews).every(viewed => viewed === true)) {
-                showFinalDialog();
+                showFriendQuestion();
             }
         });
     
-        function showFinalDialog() {
-            document.querySelector('.tape-container').style.display = 'none';
-    
-            const dialog = document.createElement('div');
-            dialog.style.backgroundColor = 'black';
-            dialog.style.color = 'red';
-            dialog.style.position = 'fixed';
-            dialog.style.top = '50%';
-            dialog.style.left = '50%';
-            dialog.style.transform = 'translate(-50%, -50%)';
-            dialog.style.padding = '20px';
-            dialog.style.zIndex = '3000';
-            dialog.innerHTML = `
-                <p>What's your name?</p>
-                <input type="text" id="userName" />
-                <button onclick="saveName()">Submit</button>
-            `;
-            document.body.appendChild(dialog);
-        }
-    
-        function saveName() {
-    const userName = document.getElementById('userName').value.trim();
-    
-    if (!userName) {
-        alert("Please enter your name.");
-        return;
-
-    }
-    fetch('https://script.google.com/macros/s/AKfycbzSPg6CJ52T7vOX0wfW9V5rhC8X7mYlhgwTOaDYM9Vs4SfOmmSEZ7-ppl-IKI7Fym4d/exec', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ name: userName })
-})
-
-
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Success:', data);
-        showFriendQuestion();
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-        alert("There was an error saving your name.");
-    });
-}
-
         function showFriendQuestion() {
             document.body.innerHTML = '';
     
@@ -238,11 +185,21 @@
             friendDialog.style.zIndex = '3000';
             friendDialog.innerHTML = `
                 <p>DON'T YOU LOVE BEING MY FRIEND?</p>
-                <button onclick="window.location.href='yes.html'">Yes</button>
-                <button onclick="window.location.href='no.html'">No</button>
+                <button onclick="handleFriendResponse('yes')">Yes</button>
+                <button onclick="handleFriendResponse('no')">No</button>
             `;
             document.body.appendChild(friendDialog);
         }
-    </script>    
+    
+        function handleFriendResponse(response) {
+        if (response === 'yes') {
+            window.location.href = 'yes.html';
+        } else {
+            window.location.href = 'no.html';
+        }
+    }
+    </script>
+    
+    
 </body>
 </html>
