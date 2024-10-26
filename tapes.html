@@ -197,16 +197,16 @@
     if (!userName) {
         alert("Please enter your name.");
         return;
-    }
 
+    }
     fetch('https://script.google.com/macros/s/AKfycbzR5VDOYL8U3zsrCnijo9RZHqPp6p997hIJZJhfnYxvYDxp5EWS8uFuX1dQDr_HY_Ol/exec', {
     method: 'POST',
-    mode: 'cors',
     headers: {
         'Content-Type': 'application/json',
     },
     body: JSON.stringify({ name: userName })
 })
+
 
     .then(response => {
         if (!response.ok) {
